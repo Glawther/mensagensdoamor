@@ -1,3 +1,4 @@
+
 ❤️ Mensagens do Amor (Sistema de Elogios e Mensagens Secretas)
 Sobre o Projeto
 Este é um projeto web pessoal construído com Django (Python) e AJAX (JavaScript) para servir como um cantinho digital e privado. O objetivo é fornecer um feed de mensagens de carinho, elogios e motivação de forma aleatória e com temas visuais variados.
@@ -95,3 +96,6 @@ Lembre-se de definir a variável SECRET_KEY no painel do Render e de adicionar o
 Este projeto é de uso pessoal, com todos os direitos reservados ao autor.
 
 Feito com ❤️ por Glawther
+=======
+# mensagensdoamor
+>>>>>>> a99a17f6971af01680fa93d1fff29fe98abc5f58
