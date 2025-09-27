@@ -59,14 +59,3 @@ def reagir_mensagem(request, mensagem_id):
     # Usamos o redirect para manter o GET e garantir que a página carregue corretamente
     return JsonResponse({'novo_total': mensagem.contagem_coracoes})
 
-def criar_admin_temp(request):
-    # Defina um nome de usuário e senha temporários BEM SEGUROS
-    username = 'Glawther'
-    password = 'Dennys147'
-    email = 'glawthers@gmail.com'
-
-    if not User.objects.filter(username=username).exists():
-        User.objects.create_superuser(username, email, password)
-        return HttpResponse("Usuário Admin criado com sucesso. AGORA, EXCLUA ESSA VIEW!")
-
-    return HttpResponse("Usuário Admin já existe.")
