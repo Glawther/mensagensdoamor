@@ -1,0 +1,17 @@
+# Arquivos de Sistema Operacional
+.DS_Store
+*.pyc
+
+# Ambiente Virtual
+venv/
+env/
+
+# Banco de Dados
+db.sqlite3
+
+# Arquivos de Mídia/Coleta Estática
+media/
+staticfiles/
+
+# Chaves Secretas (se você as moveu para um arquivo local)
+# .env (Se você usar um arquivo .env localmente)

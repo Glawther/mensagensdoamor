@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Mensagem Secreta</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <style>
+        body { 
+            text-align: center; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.5s ease;
+        }
+        .mensagem-card {
+            background-color: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            margin: auto;
+            max-width: 90%; 
+            width: 400px;
+            transition: transform 0.3s ease;
+        }
+        
+        /* DEFINIÇÃO DAS CORES TEMÁTICAS */
+        .tema-rosa { background-color: #fce4ec; }
+        .tema-azul { background-color: #e3f2fd; }
+        .tema-verde { background-color: #e8f5e9; }
+        .tema-amarelo { background-color: #fffde7; }
+
+        /* COR DE DESTAQUE PARA O BOTÃO */
+        .botao-recarregar {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        /* CORES DE BOTÃO PARA CADA TEMA */
+        .botao-recarregar.rosa { background-color: #e91e63; }
+        .botao-recarregar.azul { background-color: #2196f3; }
+        .botao-recarregar.verde { background-color: #4caf50; }
+        .botao-recarregar.amarelo { background-color: #ffc107; }
+
+        .mensagem-texto {
+            font-size: 1.8em; 
+            color: #333;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        @media (max-width: 600px) {
+            .mensagem-texto { font-size: 1.5em; }
+        }
+    </style>
+    
+</head>
+
+<body class="tema-{{ mensagem.tema_cor }}">
+
+    <div class="mensagem-card"> 
+        {% if mensagem %}
+            <p class="mensagem-texto">"{{ mensagem.texto }}"</p>
+            
+            <div style="margin-bottom: 20px;">
+                <span id="contador-coracoes-{{ mensagem.id }}" style="font-size: 1.2em; color: #e91e63;">
+                    ❤️ {{ mensagem.contagem_coracoes }}
+                </span>
+
+                <button id="botao-coracao" 
+                        data-mensagem-id="{{ mensagem.id }}" 
+                        data-url="{% url 'reagir' mensagem.id %}"
+                        style="background: none; border: none; font-size: 2em; cursor: pointer; padding: 0;"
+                        title="Gostei!">
+                    💖
+                </button>
+            </div>
+            
+            <p><small>Um Pensamento na cor {{ mensagem.get_tema_cor_display }}.</small></p>
+
+            <a href="{% url 'home' %}" class="botao-recarregar {{ mensagem.tema_cor }}">
+                Ver Outra Mensagem
+            </a>
+
+        {% else %}
+            <p class="mensagem-texto">Ainda não há mensagens secretas. Volte mais tarde!</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const botaoCoracao = document.getElementById('botao-coracao');
+            
+            // Verifica se o botão existe antes de prosseguir
+            if (!botaoCoracao) return; 
+
+            const mensagemId = botaoCoracao.dataset.mensagemId;
+            const urlReacao = botaoCoracao.dataset.url;
+            const contadorSpan = document.getElementById(`contador-coracoes-${mensagemId}`);
+            
+            // 1. Função para obter o Token CSRF (Segurança do Django)
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.startsWith(name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie('csrftoken');
+
+            // 2. Função principal que lida com o clique
+            botaoCoracao.addEventListener('click', function(e) {
+                e.preventDefault(); // Impede o comportamento padrão (ex: recarregar a página)
+
+                // Envio da requisição AJAX (Fetch API)
+                fetch(urlReacao, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 3. Atualiza o contador na tela com a resposta do Django
+                    if (data.novo_total !== undefined) {
+                        contadorSpan.textContent = '❤️ ' + data.novo_total;
+                        
+                        // (Opcional) Feedback visual rápido
+                        botaoCoracao.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            botaoCoracao.style.transform = 'scale(1)';
+                        }, 100);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao reagir:', error);
+                    alert('Erro ao enviar o coração. Tente novamente.');
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
