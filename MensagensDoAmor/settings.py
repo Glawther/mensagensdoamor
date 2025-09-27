@@ -22,7 +22,7 @@ DEBUG = True
 
 # No Render, esta lista deve incluir o domínio do Render. 
 # Adicionamos o ".render.com" para cobrir qualquer domínio gerado.
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.render.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.render.com', 'mensagensdoamor-2.onrender.com']
 
 
 # Application definition
@@ -126,6 +126,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Checa se está no ambiente de produção (se DEBUG for False)
 if not DEBUG:
+
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
     # 1. Força a desativação de debug (CRÍTICO)
     DEBUG = False 
     
