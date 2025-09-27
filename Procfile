@@ -1,1 +1,1 @@
-web: gunicorn MensagensDoAmor.wsgi
+web: gunicorn MensagensDoAmor.wsgi:application
