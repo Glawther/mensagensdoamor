@@ -8,6 +8,8 @@ from datetime import timedelta
 from django.shortcuts import redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse 
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 
 def home_mensagem_secreta(request):
     agora = timezone.now()
@@ -56,3 +58,15 @@ def reagir_mensagem(request, mensagem_id):
     # Redireciona de volta para a página inicial
     # Usamos o redirect para manter o GET e garantir que a página carregue corretamente
     return JsonResponse({'novo_total': mensagem.contagem_coracoes})
+
+def criar_admin_temp(request):
+    # Defina um nome de usuário e senha temporários BEM SEGUROS
+    username = 'Glawther'
+    password = 'Dennys147'
+    email = 'glawthers@gmail.com'
+
+    if not User.objects.filter(username=username).exists():
+        User.objects.create_superuser(username, email, password)
+        return HttpResponse("Usuário Admin criado com sucesso. AGORA, EXCLUA ESSA VIEW!")
+
+    return HttpResponse("Usuário Admin já existe.")
