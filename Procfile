@@ -1,1 +1,1 @@
-web: gunicorn MensagensDoAmor.wsgi:application
+web: python manage.py migrate --no-input && gunicorn MensagensDoAmor.wsgi:application
