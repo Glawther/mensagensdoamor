@@ -8,6 +8,7 @@
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
     <style>
         body { 
             text-align: center; 
@@ -69,6 +70,9 @@
 <body class="tema-{{ mensagem.tema_cor }}">
 
     <div class="mensagem-card"> 
+        
+        {% csrf_token %} 
+        
         {% if mensagem %}
             <p class="mensagem-texto">"{{ mensagem.texto }}"</p>
             
@@ -98,65 +102,63 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const botaoCoracao = document.getElementById('botao-coracao');
-            
-            // Verifica se o botão existe antes de prosseguir
-            if (!botaoCoracao) return; 
+    document.addEventListener('DOMContentLoaded', function() {
+        const botaoCoracao = document.getElementById('botao-coracao');
+        
+        // Verifica se o botão existe
+        if (!botaoCoracao) return; 
 
-            const mensagemId = botaoCoracao.dataset.mensagemId;
-            const urlReacao = botaoCoracao.dataset.url;
-            const contadorSpan = document.getElementById(`contador-coracoes-${mensagemId}`);
-            
-            // 1. Função para obter o Token CSRF (Segurança do Django)
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.startsWith(name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
+        const mensagemId = botaoCoracao.dataset.mensagemId;
+        const urlReacao = botaoCoracao.dataset.url;
+        const contadorSpan = document.getElementById(`contador-coracoes-${mensagemId}`);
+        
+        // CORREÇÃO: Função para obter o Token CSRF do input oculto
+        function getCsrfToken() {
+            // Usa o seletor para encontrar o input oculto gerado pela tag {% csrf_token %}
+            const input = document.querySelector('[name=csrfmiddlewaretoken]');
+            return input ? input.value : '';
+        }
+
+        botaoCoracao.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Envio da requisição AJAX (Fetch API)
+            fetch(urlReacao, {
+                method: 'POST',
+                headers: {
+                    // Envia o token no cabeçalho (padrão de segurança do Django)
+                    'X-CSRFToken': getCsrfToken(), 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({}) 
+            })
+            .then(response => {
+                // Checa se a resposta foi bem-sucedida (status 200 OK)
+                if (!response.ok) {
+                    // Lança um erro se o status for 403 (CSRF) ou 500
+                    throw new Error('Falha no servidor. Código: ' + response.status);
                 }
-                return cookieValue;
-            }
-            const csrftoken = getCookie('csrftoken');
-
-            // 2. Função principal que lida com o clique
-            botaoCoracao.addEventListener('click', function(e) {
-                e.preventDefault(); // Impede o comportamento padrão (ex: recarregar a página)
-
-                // Envio da requisição AJAX (Fetch API)
-                fetch(urlReacao, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrftoken,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // 3. Atualiza o contador na tela com a resposta do Django
-                    if (data.novo_total !== undefined) {
-                        contadorSpan.textContent = '❤️ ' + data.novo_total;
-                        
-                        // (Opcional) Feedback visual rápido
-                        botaoCoracao.style.transform = 'scale(1.2)';
-                        setTimeout(() => {
-                            botaoCoracao.style.transform = 'scale(1)';
-                        }, 100);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao reagir:', error);
-                    alert('Erro ao enviar o coração. Tente novamente.');
-                });
+                return response.json();
+            })
+            .then(data => {
+                // 3. Atualiza o contador na tela
+                if (data.novo_total !== undefined) {
+                    contadorSpan.textContent = '❤️ ' + data.novo_total;
+                    
+                    // Feedback visual rápido
+                    botaoCoracao.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        botaoCoracao.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao reagir:', error);
+                // Exibe o alerta de erro detalhado
+                alert('Erro ao enviar o coração. Tente novamente: ' + error.message);
             });
         });
+    });
     </script>
     
 </body>
