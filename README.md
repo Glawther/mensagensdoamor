@@ -1,101 +1,83 @@
+# Mensagens do Amor
 
-❤️ Mensagens do Amor (Sistema de Elogios e Mensagens Secretas)
-Sobre o Projeto
-Este é um projeto web pessoal construído com Django (Python) e AJAX (JavaScript) para servir como um cantinho digital e privado. O objetivo é fornecer um feed de mensagens de carinho, elogios e motivação de forma aleatória e com temas visuais variados.
+Aplicação web pessoal que funciona como um cantinho digital privado: a cada visita ela mostra uma
+mensagem de carinho, elogio ou motivação, com um tema visual próprio. Foi pensada para o celular
+e pode ser salva na tela inicial do iPhone, como se fosse um aplicativo.
 
-O projeto é acessível via celular e foi configurado para ser salvo na tela inicial do iPhone, simulando a experiência de um aplicativo.
+## Funcionalidades
 
-Funcionalidades Chave
-Mensagens Aleatórias: Exibe uma nova mensagem (elogio ou motivacional) a cada recarregamento da página, baseada em um algoritmo que prioriza mensagens não vistas recentemente.
+- **Mensagens aleatórias:** uma nova mensagem a cada recarregamento, priorizando as que não foram vistas recentemente.
+- **Temas visuais:** a cor de fundo e a do botão mudam conforme o tema de cada mensagem.
+- **Contador de corações:** dá para reagir a uma mensagem, e a contagem é atualizada na hora, sem recarregar a página.
+- **Administração:** as mensagens são cadastradas pelo painel admin do Django.
 
-Temas Visuais: A cor de fundo e do botão mudam dinamicamente com base no tema definido para cada mensagem.
+## Tecnologias
 
-Contador de Corações (AJAX): Permite reagir a uma mensagem clicando no coração (💖). A contagem é atualizada instantaneamente, sem recarregar a página ou mudar a mensagem.
+- Python e Django
+- Gunicorn e WhiteNoise
+- SQLite no desenvolvimento e PostgreSQL em produção
+- HTML, CSS responsivo e JavaScript (AJAX)
+- Hospedagem no Render
 
-Administração Segura: Todas as mensagens são gerenciadas através do Painel Admin do Django.
+## Como rodar
 
-🛠️ Tecnologias Utilizadas
-Backend: Python 3.x, Django
+1. Clone o repositório:
 
-Servidor WSGI: Gunicorn
+   ```bash
+   git clone https://github.com/Glawther/mensagensdoamor.git
+   cd mensagensdoamor
+   ```
 
-Arquivos Estáticos: WhiteNoise
+2. Crie e ative um ambiente virtual:
 
-Banco de Dados: SQLite (em desenvolvimento), PostgreSQL (em produção, via Render)
+   ```bash
+   python -m venv venv
+   ```
 
-Frontend: HTML, CSS (design responsivo para mobile), JavaScript/AJAX
+   No Windows (PowerShell):
 
-Hospedagem: Render
+   ```powershell
+   .\venv\Scripts\Activate
+   ```
 
-🚀 Como Executar Localmente (Desenvolvimento)
-Siga estas etapas se você quiser rodar o projeto no seu computador:
+   No Linux ou macOS:
 
-Pré-requisitos
-Você precisa ter o Python 3 e o Git instalados.
+   ```bash
+   source venv/bin/activate
+   ```
 
-Clone o Repositório:
+3. Instale as dependências e crie o banco:
 
-Bash
+   ```bash
+   pip install -r requirements.txt
+   python manage.py migrate
+   ```
 
-git clone https://github.com/Glawther/mensagensdoamor.git
-cd mensagensdoamor
-Crie e Ative o Ambiente Virtual:
+4. Crie o usuário administrador:
 
-Bash
+   ```bash
+   python manage.py createsuperuser
+   ```
 
-# Criar
-python -m venv venv
+5. Inicie o servidor:
 
-# Ativar no Windows (Powershell)
-.\venv\Scripts\Activate
+   ```bash
+   python manage.py runserver
+   ```
 
-# Ativar no Linux/macOS
-source venv/bin/activate
-Instale as Dependências:
+A aplicação fica em `http://127.0.0.1:8000/`. Cadastre as mensagens em `http://127.0.0.1:8000/admin/`.
 
-Bash
+## Publicação no Render
 
-pip install -r requirements.txt
-Configurar o Banco de Dados:
+O projeto está preparado para publicação contínua no Render, que usa o `Procfile`:
 
-Bash
-
-python manage.py migrate
-Criar o Superusuário (Admin):
-
-Bash
-
-python manage.py createsuperuser
-Rodar o Servidor:
-
-Bash
-
-python manage.py runserver
-O projeto estará acessível em http://127.0.0.1:8000/. Acesse http://127.0.0.1:8000/admin/ para inserir suas mensagens!
-
-☁️ Deploy e Configuração no Render
-O projeto está configurado para o deploy contínuo via Render.
-
-Passos de Configuração do Render:
-Variáveis de Ambiente (Environment Variables):
-
-SECRET_KEY: (Sua chave secreta longa e segura)
-
-PYTHON_VERSION: (Ex: 3.11.8)
-
-Start Command:
-O Render utiliza o Procfile e o comando Gunicorn:
-
-Bash
-
+```bash
 gunicorn MensagensDoAmor.wsgi
-Ambiente de Produção:
-Lembre-se de definir a variável SECRET_KEY no painel do Render e de adicionar o domínio gerado (ex: seudominio.onrender.com) na lista ALLOWED_HOSTS do seu settings.py.
+```
 
-📝 Licença
-Este projeto é de uso pessoal, com todos os direitos reservados ao autor.
+No painel do Render, defina as variáveis de ambiente `SECRET_KEY` (uma chave longa e aleatória)
+e `PYTHON_VERSION`, e inclua o domínio gerado em `ALLOWED_HOSTS` no `settings.py`.
 
-Feito com ❤️ por Glawther
-=======
-# mensagensdoamor
->>>>>>> a99a17f6971af01680fa93d1fff29fe98abc5f58
+## Licença
+
+Projeto de uso pessoal, com todos os direitos reservados ao autor.
